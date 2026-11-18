@@ -1,26 +1,1335 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Registered so the gradient card edge can transition on hover. */
+@property --edge-a {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(230 234 242 / 0.22);
+}
+
+@property --edge-b {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(230 234 242 / 0.05);
+}
+
+/* Registered so /demo3 can fade between dark and light mode. */
+@property --color-night {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #070b14;
+}
+
+@property --color-surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0f1626;
+}
+
+@property --color-raised {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #161f33;
+}
+
+@property --color-fg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e6eaf2;
+}
+
+@property --color-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8a94a8;
+}
+
+@property --color-line {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(230 234 242 / 0.1);
+}
+
+@property --color-line-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(230 234 242 / 0.18);
+}
+
+@theme {
+  /* The palette is closed: only the tokens below exist as Tailwind colors. */
+  --color-*: initial;
+
+  /* Default theme, from brief section 3. Other themes override these on a scoping class. */
+  --color-night: #070b14;
+  --color-surface: #0f1626;
+  --color-accent: #22d3ee;
+  --color-accent-2: #8b5cf6;
+  --color-highlight: #a3e635;
+  --color-fg: #e6eaf2;
+  --color-muted: #8a94a8;
+
+  /* Derived: not in the brief, needed to meet its requirements */
+  --color-raised: #161f33;
+  --color-accent-2-soft: #a78bfa;
+  --color-accent-2-edge: #a78bfa;
+  --color-edge: #667089;
+  --color-danger: #f87171;
+  --color-line: rgb(230 234 242 / 0.1);
+  --color-line-strong: rgb(230 234 242 / 0.18);
+
+  /* Brief section 3: 6-10px only */
+  --radius-*: initial;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  --container-content: 75rem;
+
+  --text-display: clamp(2.5rem, 1.75rem + 3.2vw, 4.5rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.025em;
+  --text-h1: clamp(2.125rem, 1.7rem + 1.8vw, 3.25rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2: clamp(1.75rem, 1.5rem + 1.1vw, 2.5rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h4: 1.125rem;
+  --text-h4--line-height: 1.35;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.55;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.08em;
+
+  --ease-precise: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-spring: cubic-bezier(0.3, 1.2, 0.5, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    /* Card photos have green lights. This shifts them to the palette's accent. */
+    --card-photo-filter: hue-rotate(50deg);
+    color-scheme: dark;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-night);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Backgrounds */
+  .bg-dots {
+    background-image: radial-gradient(color-mix(in srgb, var(--color-fg) 13%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .bg-lines {
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--color-fg) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--color-fg) 5%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .fade-out {
+    mask-image: radial-gradient(ellipse at center, #000 25%, transparent 75%);
+  }
+
+  .glow-accent {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 20%, transparent), transparent);
+  }
+
+  .glow-alt {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent-2) 22%, transparent), transparent);
+  }
+
+  /* Glass card: translucent fill, 1px gradient border, glow on hover only */
+  .glass {
+    --edge-a: color-mix(in srgb, var(--color-fg) 22%, transparent);
+    --edge-b: color-mix(in srgb, var(--color-fg) 5%, transparent);
+    --glow: color-mix(in srgb, var(--color-accent) 32%, transparent);
+    position: relative;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--color-surface) 88%, transparent), color-mix(in srgb, var(--color-surface) 68%, transparent));
+    backdrop-filter: blur(14px);
+    transition:
+      --edge-a 300ms var(--ease-precise),
+      --edge-b 300ms var(--ease-precise),
+      box-shadow 300ms var(--ease-precise),
+      transform 300ms var(--ease-precise);
+  }
+
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(140deg, var(--edge-a), var(--edge-b) 60%);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .glass-alt {
+    --glow: color-mix(in srgb, var(--color-accent-2) 38%, transparent);
+  }
+
+  .glass-accent.is-hover,
+  .glass-alt.is-hover {
+    --edge-a: var(--glow-edge, color-mix(in srgb, var(--color-accent) 90%, transparent));
+    --edge-b: color-mix(in srgb, var(--color-accent) 20%, transparent);
+    box-shadow: 0 12px 40px -12px var(--glow);
+    transform: translateY(-4px);
+  }
+
+  .glass-alt {
+    --glow-edge: color-mix(in srgb, var(--color-accent-2-edge) 95%, transparent);
+  }
+
+  .glass-alt.is-hover {
+    --edge-b: color-mix(in srgb, var(--color-accent-2) 25%, transparent);
+  }
+
+  .glass-accent:has(:focus-visible),
+  .glass-alt:has(:focus-visible) {
+    --edge-a: var(--glow-edge, color-mix(in srgb, var(--color-accent) 90%, transparent));
+    box-shadow: 0 12px 40px -12px var(--glow);
+  }
+
+  @media (hover: hover) {
+    .glass-accent:hover,
+    .glass-alt:hover {
+      --edge-a: var(--glow-edge, color-mix(in srgb, var(--color-accent) 90%, transparent));
+      --edge-b: color-mix(in srgb, var(--color-accent) 20%, transparent);
+      box-shadow: 0 12px 40px -12px var(--glow);
+      transform: translateY(-4px);
+    }
+
+    .glass-alt:hover {
+      --edge-b: color-mix(in srgb, var(--color-accent-2) 25%, transparent);
+    }
+  }
+
+  /* Makes a single link inside a card cover the whole card. */
+  .stretched::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+
+  /*
+   * Notch card. Everything inside scales with the card width (cqw), so its
+   * proportions hold at any size. Colors come only from the page's palette.
+   */
+  .notch-card {
+    --card-edge: var(--color-fg);
+    --card-edge-width: 2px;
+    --card-panel: var(--color-surface);
+    --card-title: var(--color-fg);
+    --card-copy: var(--color-muted);
+    --card-tag: var(--color-accent);
+    position: relative;
+    display: block;
+    aspect-ratio: 484 / 695;
+    container-type: inline-size;
+    border-radius: 2rem;
+  }
+
+  .notch-card[data-variant="accent"] {
+    --card-edge: var(--color-accent);
+  }
+
+  .notch-card[data-variant="light"] {
+    --card-edge: var(--color-night);
+    --card-edge-width: 2.5px;
+    --card-panel: var(--color-fg);
+    --card-title: var(--color-night);
+    --card-copy: var(--color-raised);
+    --card-tag: var(--color-raised);
+  }
+
+  .notch-card-shape {
+    position: absolute;
+    inset: 0;
+    background: var(--card-panel);
+  }
+
+  .notch-card-photo {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 64%;
+    filter: var(--card-photo-filter);
+  }
+
+  .notch-card-panel {
+    position: absolute;
+    inset: 58.13% 0 0;
+    border-radius: 6.2cqw 6.2cqw 0 0;
+    background: var(--card-panel);
+    padding: 8.3cqw 3cqw 0 9.1cqw;
+  }
+
+  .notch-card-tag {
+    color: var(--card-tag);
+    font-family: var(--font-mono);
+    font-size: 5.1cqw;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .notch-card-title {
+    margin-top: 2.3cqw;
+    color: var(--card-title);
+    font-size: 12cqw;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .notch-card-text {
+    margin-top: 4.3cqw;
+    color: var(--card-copy);
+    font-size: 5.9cqw;
+    line-height: 1.3;
+  }
+
+  .notch-card-edge {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--card-edge);
+    stroke-width: var(--card-edge-width);
+    pointer-events: none;
+  }
+
+  .notch-card-tile {
+    position: absolute;
+    top: 0;
+    left: 71.9%;
+    width: 24.8%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 6cqw;
+    background: var(--color-accent);
+    color: var(--color-night);
+    transition: transform 300ms var(--ease-precise);
+  }
+
+  /* One arrow leaves up and to the right as the next arrives from the bottom left. */
+  .notch-card-arrow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 500ms var(--ease-spring);
+  }
+
+  .notch-card-arrow-next {
+    transform: translate(-100%, 100%);
+  }
+
+  .notch-card:focus-visible .notch-card-tile {
+    transform: scale(1.08);
+  }
+
+  .notch-card:focus-visible .notch-card-arrow {
+    transform: translate(100%, -100%);
+  }
+
+  .notch-card:focus-visible .notch-card-arrow-next {
+    transform: translate(0, 0);
+  }
+
+  @media (hover: hover) {
+    .notch-card:hover .notch-card-tile {
+      transform: scale(1.08);
+    }
+
+    .notch-card:hover .notch-card-arrow {
+      transform: translate(100%, -100%);
+    }
+
+    .notch-card:hover .notch-card-arrow-next {
+      transform: translate(0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .notch-card-tile,
+    .notch-card-arrow {
+      transition: none;
+    }
+
+    .notch-card:hover .notch-card-tile,
+    .notch-card:focus-visible .notch-card-tile,
+    .notch-card:hover .notch-card-arrow,
+    .notch-card:focus-visible .notch-card-arrow {
+      transform: none;
+    }
+
+    .notch-card:hover .notch-card-arrow-next,
+    .notch-card:focus-visible .notch-card-arrow-next {
+      transform: translate(-100%, 100%);
+    }
+  }
+
+  /*
+   * Card row: 40% larger than the size that fits one screen. 128px is the gaps
+   * and panel padding, which stay fixed. It can extend past the content column,
+   * stays centered, and is never wider than the window.
+   */
+  @media (min-width: 64rem) {
+    .notch-card-grid {
+      --cards-fit: min((100svh - 400px) * 2.089, 100% - 128px);
+      align-self: center;
+      width: min(var(--cards-fit) * 1.404 + 128px, 100vw - 2rem);
+    }
+  }
+
+  /* Buttons */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    padding: 0.5rem 1.25rem;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 200ms var(--ease-precise),
+      border-color 200ms var(--ease-precise),
+      box-shadow 300ms var(--ease-precise);
+  }
+
+  /* Light sweep */
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--color-fg) 40%, transparent), transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-night);
+    box-shadow: 0 0 22px -6px color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+
+  .btn-primary.is-hover {
+    box-shadow: 0 0 34px -4px color-mix(in srgb, var(--color-accent) 80%, transparent);
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--color-edge);
+    color: var(--color-fg);
+  }
+
+  .btn-secondary::after {
+    background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--color-fg) 12%, transparent), transparent 70%);
+  }
+
+  .btn-secondary.is-hover {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  }
+
+  .btn-ghost {
+    padding-inline: 0.25rem;
+    color: var(--color-accent);
+  }
+
+  .btn-ghost::after {
+    display: none;
+  }
+
+  .btn-ghost.is-hover {
+    color: var(--color-fg);
+  }
+
+  .btn.is-focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .btn:disabled {
+    border-color: var(--color-line-strong);
+    background: var(--color-raised);
+    box-shadow: none;
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+
+  .btn:disabled::after {
+    display: none;
+  }
+
+  .btn-ghost:disabled {
+    background: transparent;
+  }
+
+  @media (hover: hover) {
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 0 34px -4px color-mix(in srgb, var(--color-accent) 80%, transparent);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--color-accent);
+      background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+    }
+
+    .btn-ghost:hover {
+      color: var(--color-fg);
+    }
+
+    .btn:hover:not(:disabled)::after {
+      transform: translateX(120%);
+      transition: transform 600ms var(--ease-precise);
+    }
+  }
+
+  /* Split button: a label beside a separate arrow tile, matching the notch cards. */
+  .split-btn {
+    --split-edge: var(--color-accent);
+    --split-fill: var(--color-surface);
+    --split-wipe: var(--color-accent);
+    display: flex;
+    width: fit-content;
+    gap: 0.5rem;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: transform 300ms var(--ease-precise);
+  }
+
+  .split-btn[data-variant="border"] {
+    --split-edge: var(--color-fg);
+    --split-wipe: var(--color-fg);
+  }
+
+  .split-btn[data-variant="light"] {
+    --split-edge: var(--color-night);
+    --split-fill: var(--color-night);
+  }
+
+  .split-btn-label {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    overflow: hidden;
+    border: 2px solid var(--split-edge);
+    border-radius: var(--radius-lg);
+    background: var(--split-fill);
+    padding-inline: 1.25rem;
+    color: var(--color-fg);
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 300ms var(--ease-precise);
+  }
+
+  /*
+   * A circle that grows from the cursor until it fills the label. It is large
+   * enough to cover the label from any starting point, including a corner.
+   */
+  .split-btn-label::before {
+    content: "";
+    position: absolute;
+    top: var(--wipe-y, 50%);
+    left: var(--wipe-x, 1.25rem);
+    z-index: -1;
+    width: 240%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--split-wipe);
+    transform: translate(-50%, -50%) scale(0);
+    transition:
+      transform 600ms cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 200ms var(--ease-precise);
+  }
+
+  .split-btn-tile {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-accent);
+    color: var(--color-night);
+  }
+
+  /* One arrow leaves up and to the right as the next arrives from the bottom left. */
+  .split-btn-arrow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 500ms var(--ease-spring);
+  }
+
+  .split-btn-arrow-next {
+    transform: translate(-100%, 100%);
+  }
+
+  .split-btn:focus-visible,
+  .split-btn:active {
+    transform: scale(1.04);
+  }
+
+  /* Once the circle has covered the label, its own fill matches so no seam shows at the border. */
+  .split-btn:focus-visible .split-btn-label,
+  .split-btn:active .split-btn-label {
+    background-color: var(--split-wipe);
+    color: var(--color-night);
+    transition:
+      color 300ms var(--ease-precise),
+      background-color 0s 400ms;
+  }
+
+  .split-btn:focus-visible .split-btn-label::before,
+  .split-btn:active .split-btn-label::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .split-btn:focus-visible .split-btn-arrow,
+  .split-btn:active .split-btn-arrow {
+    transform: translate(100%, -100%);
+  }
+
+  .split-btn:focus-visible .split-btn-arrow-next,
+  .split-btn:active .split-btn-arrow-next {
+    transform: translate(0, 0);
+  }
+
+  @media (hover: hover) {
+    .split-btn:hover {
+      transform: scale(1.04);
+    }
+
+    .split-btn:hover .split-btn-label {
+      background-color: var(--split-wipe);
+      color: var(--color-night);
+      transition:
+        color 300ms var(--ease-precise),
+        background-color 0s 400ms;
+    }
+
+    .split-btn:hover .split-btn-label::before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .split-btn:hover .split-btn-arrow {
+      transform: translate(100%, -100%);
+    }
+
+    .split-btn:hover .split-btn-arrow-next {
+      transform: translate(0, 0);
+    }
+  }
+
+  /* Pressed: the fill darkens slightly. */
+  .split-btn:active .split-btn-label,
+  .split-btn:active .split-btn-label::before {
+    background-color: color-mix(in srgb, var(--split-wipe) 80%, var(--color-night));
+  }
+
+  /* Reduced motion: the colors still change, but nothing moves. */
+  @media (prefers-reduced-motion: reduce) {
+    .split-btn,
+    .split-btn-label,
+    .split-btn-label::before,
+    .split-btn-arrow,
+    .split-btn:hover .split-btn-label,
+    .split-btn:focus-visible .split-btn-label,
+    .split-btn:active .split-btn-label {
+      transition: none;
+    }
+
+    .split-btn:hover,
+    .split-btn:focus-visible,
+    .split-btn:active {
+      transform: none;
+    }
+
+    .split-btn:hover .split-btn-arrow,
+    .split-btn:focus-visible .split-btn-arrow,
+    .split-btn:active .split-btn-arrow {
+      transform: none;
+    }
+
+    .split-btn:hover .split-btn-arrow-next,
+    .split-btn:focus-visible .split-btn-arrow-next,
+    .split-btn:active .split-btn-arrow-next {
+      transform: translate(-100%, 100%);
+    }
+  }
+
+  /* Form fields */
+  .field {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-night) 70%, transparent);
+    padding: 0.625rem 0.875rem;
+    color: var(--color-fg);
+    transition:
+      border-color 200ms var(--ease-precise),
+      box-shadow 200ms var(--ease-precise);
+  }
+
+  .field::placeholder {
+    color: var(--color-muted);
+  }
+
+  .field:focus-visible,
+  .field.is-focus {
+    border-color: var(--color-accent);
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 28%, transparent);
+  }
+
+  .field[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  .field[data-valid="true"] {
+    border-color: var(--color-highlight);
+  }
+
+  select.field {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-muted) 50%),
+      linear-gradient(-45deg, transparent 50%, var(--color-muted) 50%);
+    background-position:
+      right 1.1rem center,
+      right 0.8rem center;
+    background-repeat: no-repeat;
+    background-size:
+      0.32rem 0.32rem,
+      0.32rem 0.32rem;
+    padding-inline-end: 2.25rem;
+  }
+
+  /* Render placeholder until Olive Labs supplies real product imagery */
+  .render-slot {
+    background-color: var(--color-night);
+    background-image:
+      radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 55%),
+      radial-gradient(circle at 80% 90%, color-mix(in srgb, var(--color-accent-2) 16%, transparent), transparent 55%),
+      radial-gradient(color-mix(in srgb, var(--color-fg) 13%, transparent) 1px, transparent 1px);
+    background-size:
+      auto,
+      auto,
+      18px 18px;
+  }
+
+  /* Ticker */
+  .ticker {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker 48s linear infinite;
+  }
+
+  .ticker:hover .ticker-track,
+  .ticker:focus-within .ticker-track,
+  .ticker[data-paused="true"] .ticker-track {
+    animation-play-state: paused;
+  }
+
+  /* Animated icons */
+  .icon-pulse {
+    animation: pulse 2.8s var(--ease-precise) infinite;
+  }
+
+  .icon-pulse-late {
+    animation: pulse 2.8s var(--ease-precise) 0.9s infinite;
+  }
+
+  .icon-spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spin 16s linear infinite;
+  }
+
+  .mesh-node {
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass,
+    .btn,
+    .field {
+      transition: none;
+    }
+
+    .glass-accent:hover,
+    .glass-alt:hover,
+    .glass-accent.is-hover,
+    .glass-alt.is-hover {
+      transform: none;
+    }
+
+    .btn:hover:not(:disabled)::after {
+      transition: none;
+      transform: translateX(-120%);
+    }
+
+    .ticker {
+      mask-image: none;
+    }
+
+    .ticker-track {
+      width: auto;
+      flex-wrap: wrap;
+      animation: none;
+    }
+
+    .icon-pulse,
+    .icon-pulse-late,
+    .icon-spin,
+    .mesh-node {
+      animation: none;
+    }
+  }
+}
+
+/*
+ * Olive palette, read from olivelab.tech with white replaced by #EFE7D8 and
+ * #C85A32 added as the secondary accent. Small text on cards stays cream,
+ * because #C85A32 falls just short of AA on #111111.
+ */
+.theme-olive {
+  --color-night: #050505;
+  --color-surface: #111111;
+  --color-raised: #1a1a1a;
+  --color-accent: #7a9e45;
+  --color-accent-2: #c85a32;
+  --color-accent-2-soft: #efe7d8;
+  --color-accent-2-edge: #c85a32;
+  --color-highlight: #7a9e45;
+  --color-fg: #efe7d8;
+  --color-muted: #afafaf;
+  --color-edge: #afafaf;
+  --color-danger: #efe7d8;
+  --color-line: rgb(239 231 216 / 0.1);
+  --color-line-strong: rgb(239 231 216 / 0.18);
+  --card-photo-filter: hue-rotate(-38deg) saturate(0.7);
+}
+
+/* Green palette: the six supplied colors, with #2fd463 as the only accent. */
+.theme-green {
+  --color-night: #020202;
+  --color-surface: #151515;
+  --color-raised: #404241;
+  --color-accent: #2fd463;
+  --color-accent-2: #818281;
+  --color-accent-2-soft: #eeeeee;
+  --color-accent-2-edge: #818281;
+  --color-highlight: #2fd463;
+  --color-fg: #eeeeee;
+  --color-muted: #818281;
+  --color-edge: #818281;
+  --color-danger: #eeeeee;
+  --color-line: rgb(238 238 238 / 0.1);
+  --color-line-strong: rgb(238 238 238 / 0.18);
+  --card-photo-filter: none;
+}
+
+/* Stops the default theme's background showing past the page edge or on overscroll. */
+body:has(.theme-olive) {
+  background-color: #050505;
+}
+
+body:has(.theme-green) {
+  background-color: #020202;
+}
+
+/*
+ * /demo3 light mode: a white canvas with Super Silver cards. Everything on the page
+ * reads these tokens, so this block switches it all. The tokens are registered at the
+ * top of this file, which is what lets the whole page fade between modes.
+ */
+.lg-page {
+  transition:
+    --color-night 400ms ease,
+    --color-surface 400ms ease,
+    --color-raised 400ms ease,
+    --color-fg 400ms ease,
+    --color-muted 400ms ease,
+    --color-line 400ms ease,
+    --color-line-strong 400ms ease;
+}
+
+.theme-green[data-mode="light"] {
+  --color-night: #ffffff;
+  --color-surface: #eeeeee;
+  --color-raised: #818281;
+  --color-accent-2-soft: #404241;
+  --color-fg: #020202;
+  --color-muted: #404241;
+  --color-danger: #020202;
+  --color-line: rgb(2 2 2 / 0.1);
+  --color-line-strong: rgb(2 2 2 / 0.18);
+  color-scheme: light;
+}
+
+body:has(.theme-green[data-mode="light"]) {
+  background-color: #ffffff;
+}
+
+/*
+ * /demo3 page scrollbar: a green thumb with no track or arrows. The color is written out
+ * because the scrollbar belongs to <html>, which sits outside the palette on .lg-page.
+ */
+html:has(.lg-page)::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
+}
+
+html:has(.lg-page)::-webkit-scrollbar-track,
+html:has(.lg-page)::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html:has(.lg-page)::-webkit-scrollbar-button {
+  display: none;
+}
+
+html:has(.lg-page)::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #2fd463 padding-box;
+}
+
+/* Firefox has no ::-webkit-scrollbar, so it uses the standard properties. */
+@supports not selector(::-webkit-scrollbar) {
+  html:has(.lg-page) {
+    scrollbar-color: #2fd463 transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* The hero's Explore button: filled with each mode's text color. Its label turns green on hover. */
+.lg-explore {
+  --split-edge: var(--color-fg);
+  --split-fill: var(--color-fg);
+  --split-wipe: var(--color-fg);
+}
+
+.lg-explore .split-btn-label {
+  color: var(--color-night);
+}
+
+.lg-explore:focus-visible .split-btn-label,
+.lg-explore:active .split-btn-label {
+  color: var(--color-accent);
+}
+
+@media (hover: hover) {
+  .lg-explore:hover .split-btn-label {
+    color: var(--color-accent);
+  }
+}
+
+/*
+ * /demo2 is /demo3 in the olive palette. Cream takes the place of white, so its light
+ * mode is a cream canvas with slightly deeper cream cards. Its photos multiply onto
+ * the cream, so their white backgrounds take on its tone.
+ */
+.theme-olive[data-mode="light"] {
+  --color-night: #efe7d8;
+  --color-surface: #e3d9c6;
+  --color-raised: #afafaf;
+  --color-accent-2-soft: #1a1a1a;
+  --color-fg: #050505;
+  --color-muted: #444444;
+  --color-danger: #050505;
+  --color-line: rgb(5 5 5 / 0.1);
+  --color-line-strong: rgb(5 5 5 / 0.18);
+  color-scheme: light;
+}
+
+body:has(.theme-olive[data-mode="light"]) {
+  background-color: #efe7d8;
+}
+
+.theme-olive .lg-img-light {
+  mix-blend-mode: multiply;
+}
+
+.theme-olive .lg-word-labs {
+  fill: #3a3a3a;
+}
+
+.theme-olive[data-mode="light"] .lg-word-labs {
+  fill: #afafaf;
+}
+
+html:has(.lg-page.theme-olive)::-webkit-scrollbar-thumb {
+  background: #7a9e45 padding-box;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html:has(.lg-page.theme-olive) {
+    scrollbar-color: #7a9e45 transparent;
+  }
+}
+
+/*
+ * /demo is /demo3 in the default palette from /design. Its dark mode is those default
+ * colors, so this only adds light mode: a white canvas with cards in the palette's light tone.
+ */
+.theme-brief[data-mode="light"] {
+  --color-night: #ffffff;
+  --color-surface: #e6eaf2;
+  --color-raised: #8a94a8;
+  --color-fg: #070b14;
+  --color-muted: #3f4a60;
+  --color-line: rgb(7 11 20 / 0.1);
+  --color-line-strong: rgb(7 11 20 / 0.18);
+  color-scheme: light;
+}
+
+body:has(.theme-brief[data-mode="light"]) {
+  background-color: #ffffff;
+}
+
+.theme-brief[data-mode="light"] .bg-accent-2-soft {
+  color: #070b14;
+}
+
+/* The dark photos have black backgrounds, so lighten lets the navy canvas show through them. */
+.theme-brief .lg-img-dark {
+  mix-blend-mode: lighten;
+}
+
+.theme-brief .lg-word-labs {
+  fill: #333d52;
+}
+
+.theme-brief[data-mode="light"] .lg-word-labs {
+  fill: #8a94a8;
+}
+
+html:has(.lg-page.theme-brief)::-webkit-scrollbar-thumb {
+  background: #22d3ee padding-box;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html:has(.lg-page.theme-brief) {
+    scrollbar-color: #22d3ee transparent;
+  }
+}
+
+/*
+ * Each photo exists in both modes and crossfades. See ThemedImage in _components/sections.tsx.
+ * The palette's photo filter shifts their green lights to match its accent.
+ */
+.lg-img-dark,
+.lg-img-light {
+  filter: var(--card-photo-filter);
+  transition:
+    opacity 400ms ease,
+    transform 500ms ease-in-out;
+}
+
+.lg-img-light,
+[data-mode="light"] .lg-img-dark {
+  opacity: 0;
+}
+
+[data-mode="light"] .lg-img-light {
+  opacity: 1;
+}
+
+/* The robot's white background melts into the page. */
+.lg-idea .lg-img-light {
+  mix-blend-mode: multiply;
+}
+
+/*
+ * Green is too faint to read on white, so in light mode it only appears as a fill or
+ * an underline, and whatever sits on a green fill is black.
+ */
+[data-mode="light"] :focus-visible {
+  outline-color: #020202;
+}
+
+[data-mode="light"] .bg-accent.text-night,
+[data-mode="light"] .split-btn-tile {
+  color: #020202;
+}
+
+[data-mode="light"] .lg-accent-icon {
+  color: var(--color-fg);
+}
+
+[data-mode="light"] .lg-faq-tile {
+  background-color: var(--color-accent);
+  color: #020202;
+}
+
+[data-mode="light"] .lg-mail:hover {
+  color: var(--color-fg);
+}
+
+[data-mode="light"] .lg-mail:hover span {
+  text-decoration-color: var(--color-accent);
+}
+
+[data-mode="light"] .split-btn[data-variant="accent"]:focus-visible .split-btn-label,
+[data-mode="light"] .split-btn[data-variant="accent"]:active .split-btn-label {
+  color: #020202;
+}
+
+@media (hover: hover) {
+  [data-mode="light"] .split-btn[data-variant="accent"]:hover .split-btn-label {
+    color: #020202;
+  }
+}
+
+/* These palettes have no background radial glows. Dots and grid lines remain. */
+.theme-olive .glow-accent,
+.theme-olive .glow-alt,
+.theme-green .glow-accent,
+.theme-green .glow-alt {
+  display: none;
+}
+
+.theme-olive .render-slot,
+.theme-green .render-slot {
+  background-image: radial-gradient(color-mix(in srgb, var(--color-fg) 13%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/*
+ * /demo3 scroll effects. An element starts blurred and slightly low, then settles
+ * once when it enters the viewport. See _components/scroll-reveal.tsx.
+ */
+[data-reveal=""] {
+  opacity: 0;
+  transform: translate3d(0, 10%, 0);
+  filter: blur(10px);
+}
+
+[data-reveal="image"] {
+  transform: scale(1.2);
+  filter: blur(10px);
+}
+
+[data-reveal][data-revealed] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition-property: opacity, transform, filter;
+  transition-duration: 800ms;
+  transition-delay: 100ms;
+  transition-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+[data-reveal="image"][data-revealed] {
+  transition-duration: 700ms;
+}
+
+/*
+ * Square cards in a row that moves sideways as the page scrolls. The 14rem leaves
+ * room for the heading and spacing, so a whole card always fits on one screen.
+ */
+.lg-rail-card {
+  width: max(16rem, min(100svh - 14rem, 82vw, 48rem));
+  aspect-ratio: 1;
+}
+
+.lg-rail-stage {
+  overflow-x: auto;
+}
+
+/* Keep in sync with PIN_QUERY in _components/service-rail.tsx. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 32rem) {
+  .lg-rail-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: clip;
+  }
+}
+
+/* Soft bands of window light across a section. */
+.lg-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    172deg,
+    transparent 0 8rem,
+    color-mix(in srgb, var(--color-fg) 5%, transparent) 11rem,
+    transparent 15rem
+  );
+  filter: blur(16px);
+  pointer-events: none;
+}
+
+/* Hovering the pulsing dot zooms the robot. The dot fades while it does. */
+.lg-idea:has(.lg-dot:hover) .lg-idea-image {
+  transform: scale(1.1);
+  transition:
+    opacity 400ms ease,
+    transform 1000ms ease-out;
+}
+
+.lg-dot {
+  width: 5rem;
+  height: 5rem;
+  transition: opacity 500ms ease-out;
+}
+
+.lg-dot:hover {
+  opacity: 0;
+}
+
+.lg-dot::before,
+.lg-dot::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.lg-dot::before {
+  inset: 0;
+  border: 1px solid var(--color-fg);
+  animation: dot-ring 2.4s ease-out infinite;
+}
+
+.lg-dot::after {
+  inset: 1.875rem;
+  background: var(--color-fg);
+}
+
+/* No JavaScript, or a preference for less motion: show everything in its final state. */
+@media (scripting: none) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .lg-page,
+  .lg-page *,
+  .lg-page *::before,
+  .lg-page *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  .lg-dot::before {
+    animation: none;
+  }
+}
+
+@keyframes dot-ring {
+  from {
+    opacity: 1;
+    transform: scale(0.6);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
